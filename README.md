@@ -37,7 +37,7 @@ A lightweight, self-hosted analytics service for a blog. It collects page view e
 ```sh
 git clone <repo-url>
 cd blog-analytics-service
-cp .env.example .env
+cp analyticsanalytics.env.example analytics.env
 ```
 
 ### 2. Set a dashboard password
@@ -48,7 +48,7 @@ Generate a bcrypt hash for your password:
 echo -n 'your-secure-password' | cargo run -- --hash-password
 ```
 
-Copy the output (starts with `$2b$12$...`) and set it in `.env`:
+Copy the output (starts with `$2b$12$...`) and set it in `analytics.env`:
 
 ```
 DASHBOARD_PASSWORD_HASH=$2b$12$your-hash-here
@@ -62,7 +62,7 @@ Generate a random secret for signing session cookies:
 openssl rand -hex 32
 ```
 
-Set it in `.env`:
+Set it in `analytics.env`:
 
 ```
 COOKIE_SECRET=your-random-hex-string
@@ -188,7 +188,7 @@ blog-analytics-service/
 ├── Cargo.toml
 ├── Dockerfile
 ├── docker-compose.yml
-├── .env.example
+├── analytics.env.example
 ├── src/
 │   ├── main.rs              # Entrypoint, router setup, auth config
 │   ├── db.rs                # Database init, indexes, query functions

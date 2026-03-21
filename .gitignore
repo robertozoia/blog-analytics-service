@@ -1,4 +1,4 @@
 /target
-.env
+analytics.env
 data/
 analytics-data/

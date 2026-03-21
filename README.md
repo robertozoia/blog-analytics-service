@@ -37,22 +37,18 @@ A lightweight, self-hosted analytics service for a blog. It collects page view e
 ```sh
 git clone <repo-url>
 cd blog-analytics-service
-cp analyticsanalytics.env.example analytics.env
+cp analytics.env.example analytics.env
 ```
 
 ### 2. Set a dashboard password
 
-Generate a bcrypt hash for your password:
-
-```sh
-echo -n 'your-secure-password' | cargo run -- --hash-password
-```
-
-Copy the output (starts with `$2b$12$...`) and set it in `analytics.env`:
+Edit `analytics.env` and set your password:
 
 ```
-DASHBOARD_PASSWORD_HASH=$2b$12$your-hash-here
+DASHBOARD_PASSWORD=your-secure-password
 ```
+
+The password is hashed automatically at startup using bcrypt.
 
 ### 3. Set a cookie secret
 
@@ -76,7 +72,7 @@ COOKIE_SECRET=your-random-hex-string
 cargo run
 ```
 
-The server starts on `http://localhost:3001`. In development, if `DASHBOARD_PASSWORD_HASH` is not set, the default password is `admin`.
+The server starts on `http://localhost:3001`. If `DASHBOARD_PASSWORD` is not set, the default password is `admin`.
 
 **Production (Docker):**
 
@@ -91,7 +87,8 @@ The container listens on `127.0.0.1:8082` (intended to sit behind a reverse prox
 | Variable | Required | Default | Description |
 |---|---|---|---|
 | `DATABASE_PATH` | No | `./data/analytics.db` | Path to the SQLite database file |
-| `DASHBOARD_PASSWORD_HASH` | Yes (prod) | Dev default: `admin` | Bcrypt hash of the dashboard password |
+| `DASHBOARD_PASSWORD` | Yes (prod) | Dev default: `admin` | Dashboard password (plaintext, hashed at startup) |
+| `DASHBOARD_PASSWORD_HASH` | No | — | Alternative: pre-hashed bcrypt password (use one or the other) |
 | `COOKIE_SECRET` | Yes (prod) | Random (per restart) | Secret key for signing session cookies |
 
 ## Dashboard

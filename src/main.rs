@@ -38,14 +38,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let conn = db::init_db()?;
 
-    // Read auth config from environment
-    let password_hash = std::env::var("DASHBOARD_PASSWORD_HASH")
-        .unwrap_or_else(|_| {
-            // Default hash for development: password is "admin"
-            // Generate a new one with: echo -n 'yourpassword' | htpasswd -niBC 10 "" | cut -d: -f2
-            tracing::warn!("DASHBOARD_PASSWORD_HASH not set, using default dev password 'admin'");
-            bcrypt::hash("admin", bcrypt::DEFAULT_COST).unwrap()
-        });
+    // Read auth config from environment.
+    // DASHBOARD_PASSWORD (plaintext, hashed at startup) is the recommended approach.
+    // DASHBOARD_PASSWORD_HASH (pre-hashed bcrypt) is also supported.
+    let password_hash = if let Ok(password) = std::env::var("DASHBOARD_PASSWORD") {
+        tracing::info!("Hashing DASHBOARD_PASSWORD at startup");
+        bcrypt::hash(password, bcrypt::DEFAULT_COST)
+            .expect("Failed to hash DASHBOARD_PASSWORD")
+    } else if let Ok(hash) = std::env::var("DASHBOARD_PASSWORD_HASH") {
+        hash
+    } else {
+        tracing::warn!("DASHBOARD_PASSWORD not set, using default dev password 'admin'");
+        bcrypt::hash("admin", bcrypt::DEFAULT_COST).unwrap()
+    };
 
     let cookie_secret = std::env::var("COOKIE_SECRET")
         .unwrap_or_else(|_| {
